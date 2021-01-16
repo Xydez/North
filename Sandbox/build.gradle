@@ -1,0 +1,12 @@
+apply plugin: "application"
+apply plugin: "java"
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation project(":North")
+}
+
+mainClassName = "io.xydez.sandbox.Main"
