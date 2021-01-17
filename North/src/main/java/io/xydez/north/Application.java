@@ -1,10 +1,11 @@
 package io.xydez.north;
 
 import io.xydez.north.graphics.Renderer;
+import jdk.jshell.execution.Util;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.opengl.*;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -13,6 +14,7 @@ import static org.lwjgl.opengl.GL11.*;
 public abstract class Application
 {
     public static final int NULL = 0;
+    protected static final Logger logger = LogManager.getRootLogger();
 
     private long handle = NULL;
 
@@ -21,15 +23,22 @@ public abstract class Application
         /* Initialize GLFW and OpenGL */
 
         // Setup logging for GLFW
-        GLFWErrorCallback.createPrint(System.err).set();
+        glfwSetErrorCallback((int error, long descriptionPointer) ->
+        {
+            String description = GLFWErrorCallback.getDescription(descriptionPointer);
+            logger.error("[GLFW 0x{:x}] {}}", error, description);
+        });
 
         // Initialize glfw
+        logger.trace("Initializing GLFW...");
         if (!glfwInit())
         {
             throw new RuntimeException("Failed to initialize GLFW!");
         }
 
         // Create a basic glfw window
+        logger.trace("Creating window...");
+
         glfwDefaultWindowHints();
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -51,8 +60,9 @@ public abstract class Application
         glfwMakeContextCurrent(this.handle);
 
         // Initialize an OpenGL context
+        logger.trace("Initializing OpenGL context...");
         GL.createCapabilities();
-        GLUtil.setupDebugMessageCallback(System.err);
+        Utility.initGLLogging();
 
         // Enable vsync
         glfwSwapInterval(1);
@@ -71,6 +81,11 @@ public abstract class Application
         glfwSetFramebufferSizeCallback(this.handle, (window, width1, height1) -> glViewport(0, 0, width1, height1));
     }
 
+    public static Logger getLogger()
+    {
+        return logger;
+    }
+
     protected void initialize() {}
     protected void terminate() {}
 
@@ -83,6 +98,7 @@ public abstract class Application
         glfwShowWindow(this.handle);
 
         // Initialize the application
+        logger.trace("Initializing application");
         initialize();
 
         glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
@@ -111,9 +127,11 @@ public abstract class Application
         }
 
         // Terminate the application
+        logger.trace("Terminating application...");
         terminate();
 
         // Free glfw resources
+        logger.trace("Terminating glfw...");
         glfwFreeCallbacks(this.handle);
         glfwDestroyWindow(this.handle);
         this.handle = NULL;
