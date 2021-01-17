@@ -15,8 +15,8 @@ public class Renderer
 
         glDrawElements(GL_TRIANGLES, indexBuffer.getCount(), GL_UNSIGNED_INT, NULL);
 
-        indexBuffer.unbind();
-        vertexArray.unbind();
-        shaderProgram.unbind();
+        //indexBuffer.unbind();
+        //vertexArray.unbind();
+        //shaderProgram.unbind();
     }
 }
