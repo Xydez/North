@@ -1,6 +1,6 @@
 import org.gradle.internal.os.OperatingSystem
 
-apply plugin: "java"
+apply plugin: "java-library"
 
 project.ext.lwjglVersion = "3.2.3"
 
@@ -21,14 +21,17 @@ repositories {
 }
 
 dependencies {
-	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+	implementation "com.intellij:annotations:12.0"
 
-	implementation "org.lwjgl:lwjgl"
-	implementation "org.lwjgl:lwjgl-assimp"
-	implementation "org.lwjgl:lwjgl-glfw"
-	implementation "org.lwjgl:lwjgl-openal"
-	implementation "org.lwjgl:lwjgl-opengl"
-	implementation "org.lwjgl:lwjgl-stb"
+	api platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+	api "org.lwjgl:lwjgl"
+	api "org.lwjgl:lwjgl-assimp"
+	api "org.lwjgl:lwjgl-glfw"
+	api "org.lwjgl:lwjgl-openal"
+	api "org.lwjgl:lwjgl-opengl"
+	api "org.lwjgl:lwjgl-stb"
+
 	runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
 	runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
 	runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"

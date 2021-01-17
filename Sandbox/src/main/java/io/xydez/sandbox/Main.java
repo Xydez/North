@@ -5,6 +5,11 @@ public class Main
 	public static void main(String[] args)
 	{
 		SandboxApp app = new SandboxApp();
-		app.run();
+
+		try {
+			app.run();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
