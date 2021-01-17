@@ -24,6 +24,9 @@ public class VertexArray implements Disposable
 
             i += 1;
         }
+
+        this.unbind();
+        vertexBuffer.unbind();
     }
 
     public void bind()

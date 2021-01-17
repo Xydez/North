@@ -3,3 +3,5 @@
 
 North/build/
 Sandbox/build/
+
+*.log

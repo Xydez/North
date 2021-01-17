@@ -10,18 +10,6 @@ import static org.lwjgl.opengl.GL15.*;
 
 public class VertexBuffer implements Disposable
 {
-    enum BufferUsage
-    {
-        Stream(GL_STREAM_DRAW), Static(GL_STATIC_DRAW), Dynamic(GL_DYNAMIC_DRAW);
-
-        protected final int glEnum;
-
-        BufferUsage(int glEnum)
-        {
-            this.glEnum = glEnum;
-        }
-    }
-
     private final int handle;
 
     public VertexBuffer(float[] vertices)
@@ -40,6 +28,7 @@ public class VertexBuffer implements Disposable
             this.handle = glGenBuffers();
             this.bind();
             glBufferData(GL_ARRAY_BUFFER, vertexBuffer, usage.glEnum);
+            this.unbind();
         }
     }
 
@@ -54,7 +43,8 @@ public class VertexBuffer implements Disposable
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         glDeleteBuffers(this.handle);
     }
 }

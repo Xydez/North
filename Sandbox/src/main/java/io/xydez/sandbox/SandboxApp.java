@@ -8,6 +8,7 @@ import io.xydez.north.io.FileManager;
 public class SandboxApp extends Application
 {
     private VertexBuffer vbo;
+    private IndexBuffer ibo;
     private VertexArray vao;
     private ShaderProgram program;
 
@@ -20,15 +21,23 @@ public class SandboxApp extends Application
     protected void initialize()
     {
         float[] vertices = new float[] {
-                -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f,
-                0.0f, 0.5f, 0.0f
+            -0.5f, 0.5f, 0.0f,
+            0.5f, 0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            -0.5f, -0.5f, 0.0f
+        };
+
+        int[] indices = new int[] {
+            0, 1, 2,
+            0, 2, 3
         };
 
         this.vbo = new VertexBuffer(vertices);
 
         VertexBufferLayout layout = new VertexBufferLayout();
         layout.push(VertexBufferLayout.VertexBufferElement.ElementType.Float, 3);
+
+        this.ibo = new IndexBuffer(indices);
 
         this.vao = new VertexArray(layout, this.vbo);
 
@@ -54,7 +63,7 @@ public class SandboxApp extends Application
     @Override
     protected void render(Renderer renderer)
     {
-        renderer.render(this.program, this.vao, 3);
+        renderer.render(this.program, this.vao, this.ibo);
     }
 
     @Override

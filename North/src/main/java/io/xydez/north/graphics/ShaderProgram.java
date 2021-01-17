@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
+import java.util.HashMap;
 
 import static io.xydez.north.Application.NULL;
 import static org.lwjgl.opengl.GL20.*;
@@ -12,6 +13,7 @@ import static org.lwjgl.opengl.GL20.*;
 public class ShaderProgram implements Disposable
 {
     private int handle;
+    private final HashMap<String, Integer> uniformLocationCache = new HashMap<>();
 
     public ShaderProgram(@NotNull Shader... shaders)
     {
@@ -39,6 +41,20 @@ public class ShaderProgram implements Disposable
     public void unbind()
     {
         glUseProgram(NULL);
+    }
+
+    private int getUniformLocation(String name)
+    {
+        if (this.uniformLocationCache.containsKey(name))
+            return this.uniformLocationCache.get(name);
+
+        int location = glGetUniformLocation(this.handle, name);
+        this.uniformLocationCache.put(name, location);
+
+        if (location == -1)
+            throw new RuntimeException("Location of uniform \"" + name + "\" could not be found");
+
+        return location;
     }
 
     @Override
