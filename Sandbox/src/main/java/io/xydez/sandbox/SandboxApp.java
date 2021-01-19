@@ -1,7 +1,6 @@
 package io.xydez.sandbox;
 
 import io.xydez.north.Application;
-import io.xydez.north.graphics.Renderer;
 import io.xydez.north.graphics.*;
 import io.xydez.north.io.FileManager;
 import org.joml.Vector2f;

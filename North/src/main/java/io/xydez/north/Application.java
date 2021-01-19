@@ -1,11 +1,19 @@
 package io.xydez.north;
 
+import io.xydez.north.event.EventManager;
+import io.xydez.north.event.KeyboardListener;
+import io.xydez.north.event.MouseButtonListener;
+import io.xydez.north.event.MouseMoveListener;
 import io.xydez.north.graphics.Renderer;
-import jdk.jshell.execution.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.*;
+import org.lwjgl.system.MemoryStack;
+
+import java.nio.DoubleBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -14,7 +22,10 @@ import static org.lwjgl.opengl.GL11.*;
 public abstract class Application
 {
     public static final int NULL = 0;
-    protected static final Logger logger = LogManager.getRootLogger();
+    private static final Logger logger = LogManager.getRootLogger();
+    private static final EventManager eventManager = new EventManager();
+
+    private Vector2f lastMousePos;
 
     private long handle = NULL;
 
@@ -69,13 +80,65 @@ public abstract class Application
 
         /* Register GLFW callbacks */
 
-        // Exit the application if the escape key is pressed
+        // Key listener
         glfwSetKeyCallback(this.handle, ((window, key, scancode, action, mods) -> {
+            KeyboardListener.KeyboardEvent event = new KeyboardListener.KeyboardEvent(key, scancode, action == GLFW_PRESS ? KeyboardListener.KeyboardAction.Press : (action == GLFW_RELEASE ? KeyboardListener.KeyboardAction.Release : KeyboardListener.KeyboardAction.Repeat));
+            getEventManager().fire(KeyboardListener.class, event);
+
             if (key == GLFW_KEY_ESCAPE)
             {
                 this.close();
             }
         }));
+
+        glfwSetMouseButtonCallback(this.handle, (long window, int button, int action, int mods) ->
+        {
+            MouseButtonListener.MouseAction mouseAction;
+            switch(action)
+            {
+                case GLFW_PRESS -> mouseAction = MouseButtonListener.MouseAction.Press;
+                case GLFW_RELEASE -> mouseAction = MouseButtonListener.MouseAction.Release;
+                default -> {
+                    getLogger().warn(String.format("Unknown mouse action %d. Ignoring event.", action));
+                    return;
+                }
+            }
+
+            MouseButtonListener.MouseButton mouseButton;
+            switch (button)
+            {
+                case GLFW_MOUSE_BUTTON_LEFT -> mouseButton = MouseButtonListener.MouseButton.Left;
+                case GLFW_MOUSE_BUTTON_MIDDLE -> mouseButton = MouseButtonListener.MouseButton.Middle;
+                case GLFW_MOUSE_BUTTON_RIGHT -> mouseButton = MouseButtonListener.MouseButton.Right;
+                default -> {
+                    getLogger().warn(String.format("Mouse button %d was %s, but isn't currently supported. Ignoring event.", button, mouseAction == MouseButtonListener.MouseAction.Press ? "pressed" : "released"));
+                    return;
+                }
+            }
+
+            MouseButtonListener.MouseButtonEvent event = new MouseButtonListener.MouseButtonEvent(mouseButton, mouseAction);
+            getEventManager().fire(MouseButtonListener.class, event);
+        });
+
+        // Before cursor listener
+        try (MemoryStack stack = MemoryStack.stackPush())
+        {
+            DoubleBuffer x = stack.mallocDouble(1);
+            DoubleBuffer y = stack.mallocDouble(1);
+
+            glfwGetCursorPos(this.handle, x, y);
+
+            this.lastMousePos = new Vector2f((float)(x.get()), (float)(y.get()));
+        }
+
+        // Cursor listener
+        glfwSetCursorPosCallback(this.handle, (long window, double xpos, double ypos) ->
+        {
+            Vector2f mousePos = new Vector2f((float)xpos, (float)ypos);
+            MouseMoveListener.MouseMoveEvent event = new MouseMoveListener.MouseMoveEvent(this.lastMousePos, mousePos);
+            getEventManager().fire(MouseMoveListener.class, event);
+            this.lastMousePos = mousePos;
+        });
 
         // Automatically resize the viewport to the window
         glfwSetFramebufferSizeCallback(this.handle, (window, width1, height1) -> glViewport(0, 0, width1, height1));
@@ -85,12 +148,31 @@ public abstract class Application
     {
         return logger;
     }
+    public static EventManager getEventManager() { return eventManager; }
 
     protected void initialize() {}
     protected void terminate() {}
 
     protected void update(double delta) {}
     protected void render(Renderer renderer) {}
+
+    protected final Vector2f getWindowSize()
+    {
+        try (MemoryStack stack = MemoryStack.stackPush())
+        {
+            IntBuffer widthBuffer = stack.mallocInt(1);
+            IntBuffer heightBuffer = stack.mallocInt(1);
+
+            glfwGetWindowSize(this.handle, widthBuffer, heightBuffer);
+
+            return new Vector2f(widthBuffer.get(0), heightBuffer.get());
+        }
+    }
+
+    protected final void setMouseLocked(boolean value)
+    {
+        glfwSetInputMode(this.handle, GLFW_CURSOR, value ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    }
 
     public final void run()
     {
