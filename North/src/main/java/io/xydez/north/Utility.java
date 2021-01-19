@@ -2,6 +2,8 @@ package io.xydez.north;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.*;
 
 import static io.xydez.north.Application.NULL;
@@ -145,5 +147,15 @@ public class Utility
 		{
 			logger.warn("OpenGL logging could not be enabled!");
 		}
+	}
+
+	public static String stringify(Vector2f vector)
+	{
+		return String.format("{ x: %.2f, y: %.2f }", vector.x, vector.y);
+	}
+
+	public static String stringify(Vector3f vector)
+	{
+		return String.format("{ x: %.2f, y: %.2f, z: %.2f }", vector.x, vector.y, vector.z);
 	}
 }

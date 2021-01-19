@@ -1,9 +1,6 @@
 package io.xydez.north;
 
-import io.xydez.north.event.EventManager;
-import io.xydez.north.event.KeyboardListener;
-import io.xydez.north.event.MouseButtonListener;
-import io.xydez.north.event.MouseMoveListener;
+import io.xydez.north.event.*;
 import io.xydez.north.graphics.Renderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -138,6 +135,13 @@ public abstract class Application
             MouseMoveListener.MouseMoveEvent event = new MouseMoveListener.MouseMoveEvent(this.lastMousePos, mousePos);
             getEventManager().fire(MouseMoveListener.class, event);
             this.lastMousePos = mousePos;
+        });
+
+        // Scroll listener
+        glfwSetScrollCallback(this.handle, (long window, double xoffset, double yoffset) ->
+        {
+            MouseScrollListener.MouseScrollEvent event = new MouseScrollListener.MouseScrollEvent(new Vector2f((float)xoffset, (float)yoffset));
+            getEventManager().fire(MouseScrollListener.class, event);
         });
 
         // Automatically resize the viewport to the window
