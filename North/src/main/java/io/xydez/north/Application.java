@@ -2,6 +2,7 @@ package io.xydez.north;
 
 import io.xydez.north.event.*;
 import io.xydez.north.graphics.Renderer;
+import io.xydez.north.utility.Utility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Vector2f;
@@ -10,7 +11,6 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.DoubleBuffer;
-import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -23,11 +23,15 @@ public abstract class Application
     private static final EventManager eventManager = new EventManager();
 
     private Vector2f lastMousePos;
+    private Vector2f windowSize;
+    private boolean mouseLocked = false;
 
     private long handle = NULL;
 
     protected Application(String title, int width, int height)
     {
+        this.windowSize = new Vector2f(width, height);
+
         /* Initialize GLFW and OpenGL */
 
         // Setup logging for GLFW
@@ -145,7 +149,16 @@ public abstract class Application
         });
 
         // Automatically resize the viewport to the window
-        glfwSetFramebufferSizeCallback(this.handle, (window, width1, height1) -> glViewport(0, 0, width1, height1));
+        glfwSetFramebufferSizeCallback(this.handle, (window, width1, height1) ->
+        {
+            Vector2f newSize = new Vector2f(width1, height1);
+            WindowResizeListener.WindowResizeEvent event = new WindowResizeListener.WindowResizeEvent(this.windowSize, newSize);
+            getEventManager().fire(WindowResizeListener.class, event);
+
+            this.windowSize = newSize;
+
+            glViewport(0, 0, width1, height1);
+        });
     }
 
     public static Logger getLogger()
@@ -162,20 +175,18 @@ public abstract class Application
 
     protected final Vector2f getWindowSize()
     {
-        try (MemoryStack stack = MemoryStack.stackPush())
-        {
-            IntBuffer widthBuffer = stack.mallocInt(1);
-            IntBuffer heightBuffer = stack.mallocInt(1);
-
-            glfwGetWindowSize(this.handle, widthBuffer, heightBuffer);
-
-            return new Vector2f(widthBuffer.get(0), heightBuffer.get());
-        }
+        return this.windowSize;
     }
 
     protected final void setMouseLocked(boolean value)
     {
+        this.mouseLocked = value;
         glfwSetInputMode(this.handle, GLFW_CURSOR, value ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    }
+
+    public boolean isMouseLocked()
+    {
+        return mouseLocked;
     }
 
     public final void run()
@@ -198,7 +209,6 @@ public abstract class Application
             /* Update the application */
             double delta = glfwGetTime() - lastTime;
             lastTime = glfwGetTime();
-
             update(delta);
 
             /* Render the application */

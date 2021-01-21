@@ -1,7 +1,9 @@
-package io.xydez.north;
+package io.xydez.north.utility;
 
+import io.xydez.north.Application;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.*;
@@ -157,5 +159,10 @@ public class Utility
 	public static String stringify(Vector3f vector)
 	{
 		return String.format("{ x: %.2f, y: %.2f, z: %.2f }", vector.x, vector.y, vector.z);
+	}
+
+	public static String stringify(Matrix4f matrix)
+	{
+		return String.format("[[%.2f, %.2f, %.2f, %.2f], [%.2f, %.2f, %.2f, %.2f], [%.2f, %.2f, %.2f, %.2f], [%.2f, %.2f, %.2f, %.2f]]", matrix.get(0, 0), matrix.get(0, 1), matrix.get(0, 2), matrix.get(0, 3), matrix.get(1, 0), matrix.get(1, 1), matrix.get(1, 2), matrix.get(1, 3), matrix.get(2, 0), matrix.get(2, 1), matrix.get(2, 2), matrix.get(2, 3), matrix.get(3, 0), matrix.get(3, 1), matrix.get(3, 2), matrix.get(3, 3));
 	}
 }
