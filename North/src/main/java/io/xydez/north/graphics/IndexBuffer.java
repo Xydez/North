@@ -1,17 +1,16 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.Disposable;
+import io.xydez.north.core.Disposable;
 import org.lwjgl.system.MemoryStack;
 
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import static io.xydez.north.Application.NULL;
+import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL15.*;
 
 public class IndexBuffer implements Disposable
 {
-	private final int handle;
+	private int handle;
 
 	private final int count;
 
@@ -56,5 +55,6 @@ public class IndexBuffer implements Disposable
 	public void dispose()
 	{
 		glDeleteBuffers(this.handle);
+		this.handle = NULL;
 	}
 }

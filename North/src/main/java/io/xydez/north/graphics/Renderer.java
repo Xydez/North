@@ -1,15 +1,20 @@
 package io.xydez.north.graphics;
 
-import static io.xydez.north.Application.NULL;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL30.*;
 
 public class Renderer
 {
     public Renderer() {}
 
-    public void render(ShaderProgram shaderProgram, VertexArray vertexArray, IndexBuffer indexBuffer)
+    public void render(@Nullable ShaderProgram shaderProgram, @NotNull VertexArray vertexArray, @NotNull IndexBuffer indexBuffer)
     {
-        shaderProgram.bind();
+        if (shaderProgram != null)
+            shaderProgram.bind();
+
         vertexArray.bind();
         indexBuffer.bind();
 

@@ -1,6 +1,6 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.Disposable;
+import io.xydez.north.core.Disposable;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 import org.lwjgl.system.MemoryStack;
@@ -9,7 +9,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 
-import static io.xydez.north.Application.NULL;
+import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram implements Disposable
@@ -43,6 +43,11 @@ public class ShaderProgram implements Disposable
     public void unbind()
     {
         glUseProgram(NULL);
+    }
+
+    public void setUniform(String name, int i)
+    {
+        glUniform1i(getUniformLocation(name), i);
     }
 
     public void setUniform(String name, float f)

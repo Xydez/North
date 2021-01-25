@@ -1,6 +1,7 @@
 package io.xydez.sandbox;
 
-import io.xydez.north.Application;
+import io.xydez.north.core.Application;
+import io.xydez.north.core.ApplicationConfig;
 import io.xydez.north.event.KeyboardListener;
 import io.xydez.north.event.MouseMoveListener;
 import io.xydez.north.event.WindowResizeListener;
@@ -17,6 +18,8 @@ public class SandboxApp extends Application implements KeyboardListener, MouseMo
     private VertexArray vao;
     private ShaderProgram program;
 
+    private Texture testTexture;
+
     private double timer = 0.0;
 
     private final Vector3f velocity = new Vector3f().zero();
@@ -25,7 +28,17 @@ public class SandboxApp extends Application implements KeyboardListener, MouseMo
 
     public SandboxApp()
     {
-        super("LWJGL Test", 800, 600);
+        super(generateConfig());
+    }
+
+    private static ApplicationConfig generateConfig()
+    {
+        ApplicationConfig config = new ApplicationConfig();
+        config.title = "Sandbox App";
+        config.width = 800;
+        config.height = 600;
+
+        return config;
     }
 
     @Override
@@ -36,10 +49,10 @@ public class SandboxApp extends Application implements KeyboardListener, MouseMo
         getEventManager().addListener(MouseMoveListener.class, this);
 
         float[] vertices = new float[] {
-            -0.5f,  0.5f, 0.0f,
-             0.5f,  0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f
+            -0.5f,  0.5f, 0.0f,   0.0f, 1.0f,
+             0.5f,  0.5f, 0.0f,   1.0f, 1.0f,
+             0.5f, -0.5f, 0.0f,   1.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f
         };
 
         int[] indices = new int[] {
@@ -47,23 +60,26 @@ public class SandboxApp extends Application implements KeyboardListener, MouseMo
             0, 2, 3
         };
 
-        this.vbo = new VertexBuffer(vertices);
-
         VertexBufferLayout layout = new VertexBufferLayout();
         layout.push(VertexBufferLayout.VertexBufferElement.ElementType.Float, 3);
+        layout.push(VertexBufferLayout.VertexBufferElement.ElementType.Float, 2);
+
+        this.vbo = new VertexBuffer(vertices);
 
         this.ibo = new IndexBuffer(indices);
 
-        this.vao = new VertexArray(layout, this.vbo);
+        this.vao = new VertexArray(layout, this.vbo, this.ibo);
 
         try {
-            String vertexSource = FileManager.readClassFile("shaders/vertex.glsl");
+            String vertexSource = FileManager.readClassFileToString("shaders/vertex.glsl");
             Shader vertexShader = new Shader(vertexSource, Shader.Type.Vertex);
 
-            String fragmentSource = FileManager.readClassFile("shaders/fragment.glsl");
+            String fragmentSource = FileManager.readClassFileToString("shaders/fragment.glsl");
             Shader fragmentShader = new Shader(fragmentSource, Shader.Type.Fragment);
 
             this.program = new ShaderProgram(vertexShader, fragmentShader);
+
+            this.testTexture = new Texture("textures/grass_side.png");
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -104,13 +120,18 @@ public class SandboxApp extends Application implements KeyboardListener, MouseMo
 
         this.program.bind();
         this.program.setUniform("mvp", mvp);
-        this.program.setUniform("color", new Vector2f(((float)Math.sin(this.timer) + 1.0f) / 2.0f, ((float)Math.cos(this.timer) + 1.0f) / 2.0f));
-        renderer.render(this.program, this.vao, this.ibo);
+        this.program.setUniform("testTexture", 0);
+
+        this.testTexture.bind();
+
+        //this.program.setUniform("color", new Vector2f(((float)Math.sin(this.timer) + 1.0f) / 2.0f, ((float)Math.cos(this.timer) + 1.0f) / 2.0f));
+        renderer.render(null, this.vao, this.ibo);
     }
 
     @Override
     protected void terminate()
     {
+        this.testTexture.dispose();
         this.program.dispose();
         this.vbo.dispose();
         this.vao.dispose();

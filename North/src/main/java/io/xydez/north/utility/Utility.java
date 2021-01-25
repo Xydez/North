@@ -1,6 +1,6 @@
 package io.xydez.north.utility;
 
-import io.xydez.north.Application;
+import io.xydez.north.core.Application;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
@@ -8,7 +8,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.*;
 
-import static io.xydez.north.Application.NULL;
+import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.AMDDebugOutput.*;
 import static org.lwjgl.opengl.ARBDebugOutput.*;
 import static org.lwjgl.opengl.ARBDebugOutput.glDebugMessageCallbackARB;

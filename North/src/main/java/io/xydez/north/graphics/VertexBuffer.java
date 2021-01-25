@@ -1,16 +1,16 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.Disposable;
+import io.xydez.north.core.Disposable;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
 
-import static io.xydez.north.Application.NULL;
+import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL15.*;
 
 public class VertexBuffer implements Disposable
 {
-    private final int handle;
+    private int handle;
 
     public VertexBuffer(float[] vertices)
     {
@@ -46,5 +46,6 @@ public class VertexBuffer implements Disposable
     public void dispose()
     {
         glDeleteBuffers(this.handle);
+        this.handle = NULL;
     }
 }

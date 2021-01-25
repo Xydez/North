@@ -1,32 +1,42 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.Disposable;
+import io.xydez.north.core.Disposable;
 
-import static io.xydez.north.Application.NULL;
+import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL30.*;
 
 public class VertexArray implements Disposable
 {
-    private final int handle;
+    private int handle;
 
-    public VertexArray(VertexBufferLayout vertexBufferLayout, VertexBuffer vertexBuffer)
+    public VertexArray(VertexBufferLayout vertexBufferLayout, VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
     {
         this.handle = glGenVertexArrays();
 
         this.bind();
         vertexBuffer.bind();
+        indexBuffer.bind();
 
-        int i = 0;
+        int stride = 0;
         for (VertexBufferLayout.VertexBufferElement element : vertexBufferLayout.getElements())
         {
-            glVertexAttribPointer(i, element.getCount(), element.getType().glEnum, false, element.getCount() * element.getType().size, NULL);
+            stride += element.getType().size * element.getCount();
+        }
+
+        int i = 0;
+        int offset = 0;
+        for (VertexBufferLayout.VertexBufferElement element : vertexBufferLayout.getElements())
+        {
+            glVertexAttribPointer(i, element.getCount(), element.getType().glEnum, false, stride, offset);
             glEnableVertexAttribArray(i);
 
+            offset += element.getCount() * element.getType().size;
             i += 1;
         }
 
         this.unbind();
         vertexBuffer.unbind();
+        indexBuffer.unbind();
     }
 
     public void bind()
@@ -43,5 +53,6 @@ public class VertexArray implements Disposable
     public void dispose()
     {
         glDeleteVertexArrays(this.handle);
+        this.handle = NULL;
     }
 }

@@ -1,12 +1,12 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.Disposable;
+import io.xydez.north.core.Disposable;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
-import static io.xydez.north.Application.NULL;
+import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 public class Shader implements Disposable

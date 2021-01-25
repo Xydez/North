@@ -1,4 +1,4 @@
-package io.xydez.north;
+package io.xydez.north.core;
 
 import io.xydez.north.event.*;
 import io.xydez.north.graphics.Renderer;
@@ -28,9 +28,9 @@ public abstract class Application
 
     private long handle = NULL;
 
-    protected Application(String title, int width, int height)
+    protected Application(ApplicationConfig config)
     {
-        this.windowSize = new Vector2f(width, height);
+        this.windowSize = new Vector2f(config.width, config.height);
 
         /* Initialize GLFW and OpenGL */
 
@@ -64,7 +64,7 @@ public abstract class Application
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        this.handle = glfwCreateWindow(width, height, title, NULL, NULL);
+        this.handle = glfwCreateWindow(config.width, config.height, config.title, NULL, NULL);
         if (this.handle == NULL)
             throw new RuntimeException("Failed to create GLFW window!");
 
@@ -77,7 +77,10 @@ public abstract class Application
         Utility.initGLLogging();
 
         // Enable vsync
-        glfwSwapInterval(1);
+        if (config.vsync)
+            glfwSwapInterval(1);
+        else
+            glfwSwapInterval(0);
 
         /* Register GLFW callbacks */
 

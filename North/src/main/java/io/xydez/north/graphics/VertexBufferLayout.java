@@ -11,12 +11,7 @@ public class VertexBufferLayout
 
     public void push(VertexBufferElement.ElementType type, int count)
     {
-        push(type, count, 0, 0);
-    }
-
-    public void push(VertexBufferElement.ElementType type, int count, int offset, int stride)
-    {
-        elements.add(new VertexBufferElement(type, count, offset, stride));
+        elements.add(new VertexBufferElement(type, count));
     }
 
     protected ArrayList<VertexBufferElement> getElements()
@@ -43,7 +38,7 @@ public class VertexBufferLayout
         private final ElementType type;
         private final int count;
 
-        public VertexBufferElement(ElementType type, int count, int offset, int stride)
+        public VertexBufferElement(ElementType type, int count)
         {
             this.type = type;
             this.count = count;

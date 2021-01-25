@@ -1,4 +1,4 @@
-package io.xydez.north;
+package io.xydez.north.core;
 
 public interface Disposable
 {
