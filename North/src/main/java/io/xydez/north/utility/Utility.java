@@ -1,8 +1,7 @@
 package io.xydez.north.utility;
 
 import io.xydez.north.core.Application;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
+import io.xydez.north.io.Logger;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -23,6 +22,39 @@ public class Utility
 {
 	// Remove constructor
 	private Utility() {}
+
+	public enum Align
+	{
+		Left, Middle, Right
+	}
+
+	public static String padString(String string, int length, Align align)
+	{
+		return padString(string, length, align, " ");
+	}
+
+	public static String padString(String string, int length, Align align, String padChar)
+	{
+		int amountToPad = length - string.length();
+
+		if (amountToPad > 0)
+		{
+			if (align == Align.Left)
+			{
+				return string + padChar.repeat(amountToPad);
+			}
+			else if (align == Align.Middle)
+			{
+				return padChar.repeat((int) Math.floor(amountToPad / 2.0)) + string + padChar.repeat((int) Math.ceil(amountToPad / 2.0));
+			}
+			else if (align == Align.Right)
+			{
+				return padChar.repeat(amountToPad) + string;
+			}
+		}
+
+		return string;
+	}
 
 	public static void initGLLogging()
 	{
@@ -61,17 +93,17 @@ public class Utility
 					case GL_DEBUG_SOURCE_WINDOW_SYSTEM -> messageSource = "Window System";
 				}
 
-				Level messageLevel = Level.TRACE;
+				Logger.Level messageLevel = Logger.Level.Trace;
 				switch (type)
 				{
-					case GL_DEBUG_TYPE_ERROR -> messageLevel = Level.ERROR;
-					case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR, GL_DEBUG_TYPE_PERFORMANCE, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR -> messageLevel = Level.WARN;
-					case GL_DEBUG_TYPE_OTHER, GL_DEBUG_TYPE_PORTABILITY -> messageLevel = Level.INFO;
+					case GL_DEBUG_TYPE_ERROR -> messageLevel = Logger.Level.Error;
+					case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR, GL_DEBUG_TYPE_PERFORMANCE, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR -> messageLevel = Logger.Level.Warning;
+					case GL_DEBUG_TYPE_OTHER, GL_DEBUG_TYPE_PORTABILITY -> messageLevel = Logger.Level.Info;
 				}
 
 				String message = GLDebugMessageCallback.getMessage(length, messagePointer);
 
-				logger.log(messageLevel, "[OpenGL 0x{}] [{}] ({}) {}", Integer.toHexString(id), messageSource, messageSeverity, message);
+				logger.log(messageLevel, "[OpenGL 0x%s] [%s] (%s) %s", Integer.toHexString(id), messageSource, messageSeverity, message);
 			});
 
 			if (capabilities.OpenGL43)
@@ -102,17 +134,17 @@ public class Utility
 					case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB -> messageSource = "Window System";
 				}
 
-				Level messageLevel = Level.TRACE;
+				Logger.Level messageLevel = Logger.Level.Trace;
 				switch (type)
 				{
-					case GL_DEBUG_TYPE_ERROR_ARB -> messageLevel = Level.ERROR;
-					case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB, GL_DEBUG_TYPE_PERFORMANCE_ARB, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB -> messageLevel = Level.WARN;
-					case GL_DEBUG_TYPE_OTHER_ARB, GL_DEBUG_TYPE_PORTABILITY_ARB -> messageLevel = Level.INFO;
+					case GL_DEBUG_TYPE_ERROR_ARB -> messageLevel = Logger.Level.Error;
+					case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB, GL_DEBUG_TYPE_PERFORMANCE_ARB, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB -> messageLevel = Logger.Level.Warning;
+					case GL_DEBUG_TYPE_OTHER_ARB, GL_DEBUG_TYPE_PORTABILITY_ARB -> messageLevel = Logger.Level.Info;
 				}
 
 				String message = GLDebugMessageARBCallback.getMessage(length, messagePointer);
 
-				logger.log(messageLevel, "[OpenGL 0x{}] [{}] ({}) {}", Integer.toHexString(id), messageSource, messageSeverity, message);
+				logger.log(messageLevel, "[OpenGL 0x%s] [%s] (%s) %s", Integer.toHexString(id), messageSource, messageSeverity, message);
 			});
 
 			glDebugMessageCallbackARB(callback, NULL);
@@ -142,7 +174,7 @@ public class Utility
 
 				String message = GLDebugMessageAMDCallback.getMessage(length, messagePointer);
 
-				logger.error("[OpenGL 0x{}] [{}] ({}) {}", Integer.toHexString(id), messageCategory, messageSeverity, message);
+				logger.error("[OpenGL 0x%s] [%s] (%s) %s", Integer.toHexString(id), messageCategory, messageSeverity, message);
 			});
 		}
 		else

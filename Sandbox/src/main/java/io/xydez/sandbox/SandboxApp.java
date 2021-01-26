@@ -7,9 +7,14 @@ import io.xydez.north.event.MouseMoveListener;
 import io.xydez.north.event.WindowResizeListener;
 import io.xydez.north.graphics.*;
 import io.xydez.north.io.FileManager;
+import io.xydez.north.io.Logger;
+import io.xydez.north.utility.Utility;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import java.io.IOException;
 
 public class SandboxApp extends Application implements KeyboardListener, MouseMoveListener, WindowResizeListener
 {
@@ -47,6 +52,7 @@ public class SandboxApp extends Application implements KeyboardListener, MouseMo
         getLogger().trace("Hello from App!");
         getEventManager().addListener(KeyboardListener.class, this);
         getEventManager().addListener(MouseMoveListener.class, this);
+        getEventManager().addListener(WindowResizeListener.class, this);
 
         float[] vertices = new float[] {
             -0.5f,  0.5f, 0.0f,   0.0f, 1.0f,
@@ -111,7 +117,7 @@ public class SandboxApp extends Application implements KeyboardListener, MouseMo
     }
 
     @Override
-    protected void render(Renderer renderer)
+    protected void render(@NotNull Renderer renderer)
     {
         // getProjectionMatrix getViewMatrix
         Matrix4f mvp = this.camera.getProjectionMatrix().mul(this.camera.getViewMatrix(), new Matrix4f());

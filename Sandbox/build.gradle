@@ -9,4 +9,22 @@ dependencies {
 	implementation project(":North")
 }
 
+jar {
+	manifest {
+		attributes "Main-Class": "io.xydez.sandbox.Main"
+	}
+}
+
+task fatJar(type: Jar) {
+	manifest {
+		attributes "Main-Class": "io.xydez.sandbox.Main"
+	}
+//	archiveClassifier = "all"
+	from {
+		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+	with jar
+}
+
 mainClassName = "io.xydez.sandbox.Main"
