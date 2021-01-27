@@ -1,6 +1,5 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.core.Disposable;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -8,7 +7,7 @@ import java.nio.IntBuffer;
 import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL15.*;
 
-public class IndexBuffer implements Disposable
+public class IndexBuffer implements AutoCloseable
 {
 	private int handle;
 
@@ -52,7 +51,7 @@ public class IndexBuffer implements Disposable
 	}
 
 	@Override
-	public void dispose()
+	public void close()
 	{
 		glDeleteBuffers(this.handle);
 		this.handle = NULL;

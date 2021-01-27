@@ -1,6 +1,5 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.core.Disposable;
 import io.xydez.north.io.FileManager;
 import org.lwjgl.system.MemoryStack;
 
@@ -13,7 +12,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.stb.STBImage.*;
 
-public class Texture implements Disposable
+public class Texture implements AutoCloseable
 {
 	private int handle;
 
@@ -73,7 +72,7 @@ public class Texture implements Disposable
 	}
 
 	@Override
-	public void dispose()
+	public void close()
 	{
 		glDeleteTextures(this.handle);
 		this.handle = NULL;

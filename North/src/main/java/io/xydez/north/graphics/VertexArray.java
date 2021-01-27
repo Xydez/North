@@ -1,11 +1,9 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.core.Disposable;
-
 import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL30.*;
 
-public class VertexArray implements Disposable
+public class VertexArray implements AutoCloseable
 {
     private int handle;
 
@@ -50,7 +48,7 @@ public class VertexArray implements Disposable
     }
 
     @Override
-    public void dispose()
+    public void close()
     {
         glDeleteVertexArrays(this.handle);
         this.handle = NULL;

@@ -1,6 +1,5 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.core.Disposable;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
@@ -8,7 +7,7 @@ import java.nio.FloatBuffer;
 import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL15.*;
 
-public class VertexBuffer implements Disposable
+public class VertexBuffer implements AutoCloseable
 {
     private int handle;
 
@@ -43,7 +42,7 @@ public class VertexBuffer implements Disposable
     }
 
     @Override
-    public void dispose()
+    public void close()
     {
         glDeleteBuffers(this.handle);
         this.handle = NULL;

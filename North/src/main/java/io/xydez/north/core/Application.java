@@ -36,6 +36,13 @@ public abstract class Application
 
     private long handle = NULL;
 
+    private double lastRenderTime = 0.0;
+
+    public double getLastRenderTime()
+    {
+        return lastRenderTime;
+    }
+
     /**
      * Create a new instance of this application. There can only be one Application instance per thread.
      * @param config The configuration for this application
@@ -265,9 +272,14 @@ public abstract class Application
      * @param key The keycode of the key to check
      * @return True if the key is pressed, otherwise false
      */
-    public boolean isKeyPressed(int key)
+    public final boolean isKeyPressed(int key)
     {
         return glfwGetKey(this.handle, key) == GLFW_PRESS;
+    }
+
+    protected final void setTitle(String title)
+    {
+        glfwSetWindowTitle(this.handle, title);
     }
 
     /** Run this application
@@ -277,6 +289,10 @@ public abstract class Application
     {
         // Show the window
         glfwShowWindow(this.handle);
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
 
         // Initialize the application
         logger.trace("Initializing application");
@@ -293,9 +309,12 @@ public abstract class Application
             List<Layer> myList = new ArrayList<Layer>(layers);
             myList.sort(Comparator.comparingInt(Layer::getIndex));
 
-            /* Update the application */
             double delta = glfwGetTime() - lastTime;
             lastTime = glfwGetTime();
+
+            double renderBegin = glfwGetTime();
+
+            /* Update the application */
             update(delta);
 
             // Update all the enabled layers in order
@@ -308,12 +327,15 @@ public abstract class Application
             // Clear the color and depth buffers
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            // Render the main application
             render(renderer);
 
             // Render all the enabled layers in order
             for (Layer layer : myList)
                 if (layer.isEnabled())
                     layer.render(renderer);
+
+            this.lastRenderTime = glfwGetTime() - renderBegin;
 
             glfwSwapBuffers(this.handle);
             glfwPollEvents();

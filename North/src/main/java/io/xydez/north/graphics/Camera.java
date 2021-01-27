@@ -7,7 +7,7 @@ public abstract class Camera
 	protected static final Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
 
 	protected final Vector3f position;
-	protected final Vector3f orientation = new Vector3f(0.0f, 0.2f, 0.0f);
+	protected final Vector3f orientation = new Vector3f(0.0f, 0.0f, 0.0f);
 
 	public Camera(Vector3f position)
 	{

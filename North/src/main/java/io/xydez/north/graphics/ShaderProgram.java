@@ -1,6 +1,5 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.core.Disposable;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 import org.lwjgl.system.MemoryStack;
@@ -12,7 +11,7 @@ import java.util.HashMap;
 import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL20.*;
 
-public class ShaderProgram implements Disposable
+public class ShaderProgram implements AutoCloseable
 {
     private int handle;
     private final HashMap<String, Integer> uniformLocationCache = new HashMap<>();
@@ -124,7 +123,7 @@ public class ShaderProgram implements Disposable
     }
 
     @Override
-    public void dispose()
+    public void close()
     {
         glDeleteProgram(this.handle);
         this.handle = NULL;

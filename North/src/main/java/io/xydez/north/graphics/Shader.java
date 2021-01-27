@@ -1,6 +1,5 @@
 package io.xydez.north.graphics;
 
-import io.xydez.north.core.Disposable;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -9,7 +8,7 @@ import static org.lwjgl.opengl.GL20.*;
 import static io.xydez.north.core.Application.NULL;
 import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
-public class Shader implements Disposable
+public class Shader implements AutoCloseable
 {
     // TODO: Support more types
     public enum Type
@@ -61,7 +60,7 @@ public class Shader implements Disposable
     }
 
     @Override
-    public void dispose()
+    public void close()
     {
         glDeleteShader(this.handle);
         this.handle = NULL;
