@@ -43,11 +43,11 @@ public class BlockRenderer implements AutoCloseable
 				orientation.rotateAxis((float)((Math.PI) / 2.0), RIGHT);
 			}
 			case Front -> {
-				facePos = new Vector3f(0.0f, 0.0f, 0.5f);
-			}
-			case Back -> {
 				facePos = new Vector3f(0.0f, 0.0f, -0.5f);
 				orientation.rotateAxis((float)(-(Math.PI * 2) / 2.0), UP);
+			}
+			case Back -> {
+				facePos = new Vector3f(0.0f, 0.0f, 0.5f);
 			}
 			case Right -> {
 				facePos = new Vector3f(0.5f, 0.0f, 0.0f);

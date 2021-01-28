@@ -58,10 +58,10 @@ public class Chunk implements AutoCloseable
 					if (this.get(new Vector3i(position.x + 1, position.y, position.z)) == null)
 						faces.add(Face.Right);
 
-					if (this.get(new Vector3i(position.x, position.y, position.z + 1)) == null)
+					if (this.get(new Vector3i(position.x, position.y, position.z - 1)) == null)
 						faces.add(Face.Front);
 
-					if (this.get(new Vector3i(position.x, position.y, position.z - 1)) == null)
+					if (this.get(new Vector3i(position.x, position.y, position.z + 1)) == null)
 						faces.add(Face.Back);
 
 					if (this.get(new Vector3i(position.x, position.y + 1, position.z)) == null)

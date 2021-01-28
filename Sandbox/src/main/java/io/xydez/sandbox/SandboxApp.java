@@ -8,11 +8,13 @@ import io.xydez.north.event.WindowResizeListener;
 import io.xydez.north.graphics.*;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
+import org.joml.Math;
 
 import java.io.IOException;
 
 public class SandboxApp extends Application implements KeyboardListener, MouseMoveListener, WindowResizeListener
 {
+    private static final float SENSITIVITY = 1.0f;
 //    private VertexBuffer vbo;
 //    private IndexBuffer ibo;
 //    private VertexArray vao;
@@ -115,7 +117,7 @@ public class SandboxApp extends Application implements KeyboardListener, MouseMo
         }
 
         Vector2f windowSize = getWindowSize();
-        this.camera = new Camera.PerspectiveCamera(new Vector3f(0.0f, 0.0f, 0.0f), windowSize.x / windowSize.y, 70);
+        this.camera = new Camera.PerspectiveCamera(new Vector3f(7.5f, 1.0f, 7.5f), windowSize.x / windowSize.y, 70);
 
         GrassBlock.initialize();
         //this.blockRenderer = new BlockRenderer();
@@ -278,12 +280,17 @@ public class SandboxApp extends Application implements KeyboardListener, MouseMo
         if (!isMouseLocked())
             return;
 
-        Vector2f vector = event.getNewPosition().sub(event.getOldPosition(), new Vector2f()).mul(1.0f / 360.0f);
+        Vector2f vector = event.getNewPosition().sub(event.getOldPosition(), new Vector2f()).mul(SENSITIVITY / 360.0f);
         //this.camera.rotate(vector.y, vector.x);
 
         //this.camera.rotate(0.0f, 0.01f);
 
-        this.camera.rotate(vector.y, vector.x);
+        float newRot = vector.y + this.camera.getOrientation().x;
+
+        if (newRot >= (float)(Math.PI / 2.0) || newRot <= (float)(-Math.PI / 2.0))
+            vector.y = 0.0f;
+
+        this.camera.rotate(new Vector2f(vector.y, vector.x));
     }
 
     @Override

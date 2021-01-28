@@ -7,7 +7,7 @@ public abstract class Camera
 	protected static final Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
 
 	protected final Vector3f position;
-	protected final Vector3f orientation = new Vector3f(0.0f, 0.0f, 0.0f);
+	protected Vector3f orientation = new Vector3f(0.0f, 0.0f, 0.0f);
 
 	public Camera(Vector3f position)
 	{
@@ -28,14 +28,29 @@ public abstract class Camera
 		return new Matrix4f().lookAt(pos, pos.add(viewDirection, new Vector3f()), UP);
 	}
 
-	public void rotate(float pitch, float yaw)
+	public void rotate(Vector2f rotation)
 	{
-		rotate(pitch, yaw, 0.0f);
+		rotate(new Vector3f(rotation.x, rotation.y, 0.0f));
 	}
 
-	public void rotate(float pitch, float yaw, float roll)
+	public void rotate(Vector3f rotation)
 	{
-		this.orientation.add(new Vector3f(pitch, yaw, roll));
+		this.orientation.add(rotation);
+	}
+
+	public void setOrientation(Vector2f orientation)
+	{
+		this.setOrientation(new Vector3f(orientation.x, orientation.y, 0.0f));
+	}
+
+	public void setOrientation(Vector3f orientation)
+	{
+		this.orientation = orientation;
+	}
+
+	public Vector3f getOrientation()
+	{
+		return orientation;
 	}
 
 	public void move(Vector3f vector)
